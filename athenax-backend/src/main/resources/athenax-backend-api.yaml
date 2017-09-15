@@ -1,0 +1,314 @@
+################################################################################
+#  Licensed to the Apache Software Foundation (ASF) under one
+#  or more contributor license agreements.  See the NOTICE file
+#  distributed with this work for additional information
+#  regarding copyright ownership.  The ASF licenses this file
+#  to you under the Apache License, Version 2.0 (the
+#  "License"); you may not use this file except in compliance
+#  with the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+# limitations under the License.
+################################################################################
+
+swagger: '2.0'
+info:
+  description: AthenaX REST API
+  version: '0.1'
+  title: AthenaX REST API
+  contact:
+    email: haohui@uber.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+basePath: /ws/v1
+tags:
+  - name: cluster
+    description: Overall information of the cluster
+  - name: jobs
+    description: Operations on applications
+paths:
+  /cluster/info:
+    get:
+      tags:
+        - cluster
+      operationId: getClusterInfo
+      summary: Provide overall information of the cluster
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/ClusterInfo'
+  '/instances/{instanceUUID}':
+    get:
+      tags:
+        - apps
+      operationId: getInstanceInfo
+      summary: Find the instance by UUID
+      parameters:
+        - name: instanceUUID
+          in: path
+          description: UUID of the instance
+          required: true
+          type: string
+          format: uuid
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/InstanceStatus'
+  '/instances/{instanceUUID}/state':
+    get:
+      tags:
+        - apps
+      operationId: getInstanceState
+      summary: Get the state of the instance
+      parameters:
+        - name: instanceUUID
+          in: path
+          description: UUID of the instance
+          required: true
+          type: string
+          format: uuid
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/InstanceState'
+    put:
+      tags:
+        - apps
+      operationId: changeInstanceState
+      summary: Change the state of the instance
+      parameters:
+        - name: instanceUUID
+          in: path
+          description: UUID of the instance
+          required: true
+          type: string
+          format: uuid
+        - name: state
+          in: body
+          description: The desired state of the instance
+          required: true
+          schema:
+            $ref: '#/definitions/InstanceState'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/InstanceState'
+  /jobs:
+    get:
+      tags:
+        - jobs
+      operationId: listJob
+      summary: List all jobs
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ExtendedJobDefinition'
+  /jobs/new-jobs:
+    post:
+      tags:
+        - jobs
+      operationId: allocateNewJob
+      summary: Obtain a new UUID for a job
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              job-uuid:
+                type: string
+                description: The allocated job UUID
+  '/jobs/{jobUUID}':
+    get:
+      tags:
+        - jobs
+      operationId: getJob
+      summary: Get the detail information about a job
+      parameters:
+        - name: jobUUID
+          in: path
+          required: true
+          description: UUID of the job
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/JobDefinition'
+    post:
+      tags:
+        - jobs
+      operationId: updateJob
+      summary: >-
+        Update the definition of a job. The update might lead to starting /
+        stopping jobs
+      parameters:
+        - name: jobUUID
+          in: path
+          required: true
+          description: UUID of the job
+          type: string
+          format: uuid
+        - in: body
+          name: body
+          description: The application to be run
+          required: true
+          schema:
+            $ref: '#/definitions/JobDefinition'
+      responses:
+        '200':
+          description: successful operation
+    delete:
+      tags:
+        - jobs
+      operationId: removeJob
+      summary: Remove a defintion of a job
+      parameters:
+        - name: jobUUID
+          in: path
+          required: true
+          description: UUID of the job
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: successful operation
+definitions:
+  ClusterInfo:
+    type: object
+    properties:
+      startedOn:
+        type: integer
+        format: int64
+        description: The time the cluster is started
+  JobDefinition:
+    type: object
+    properties:
+      query:
+        type: string
+        description: The query to be run
+      outputs:
+        type: array
+        items:
+          type: string
+        description: The tables where the outputs will be pushed to. The values can be customized
+      tag:
+        type: object
+        description: 'customized information about the job (e.g., name)'
+      desired-state:
+        type: array
+        items:
+          type: object
+          properties:
+            clusterId:
+              type: string
+              description: The cluster to be submitted to
+            resource:
+              type: object
+              description: The resources the application master requires
+              properties:
+                queue:
+                  type: string
+                  description: The name of the queue to which the application should be submitted
+                memory:
+                  type: integer
+                  format: int64
+                  description: Memory required for each container
+                vCores:
+                  type: integer
+                  format: int64
+                  description: Virtual cores for each container
+  ExtendedJobDefinition:
+    type: object
+    properties:
+      uuid:
+        type: string
+        format: uuid
+        description: the job uuid
+      definition:
+        $ref: '#/definitions/JobDefinition'
+  InstanceStatus:
+    type: object
+    properties:
+      state:
+        type: string
+        description: State of the application
+        enum:
+          - NEW
+          - NEW_SAVING
+          - SUBMITTED
+          - ACCEPTED
+          - RUNNING
+          - FINISHED
+          - FAILED
+          - KILLED
+      clusterId:
+        type: string
+        description: The cluster that the application is run on
+      applicationId:
+        type: string
+        description: The YARN application ID of the instance
+      startedTime:
+        type: integer
+        format: int64
+        description: The time in which the application started
+      allocatedMB:
+        type: integer
+        format: int64
+        description: >-
+          The sum of memory in MB allocated to the application's running
+          containers
+      allocatedVCores:
+        type: integer
+        format: int64
+        description: >-
+          The sum of virtual cores allocated to the application's running
+          containers
+      runningContainers:
+        type: integer
+        format: int64
+        description: The number of containers currently running for the application
+      trackingUrl:
+        type: string
+        description: The web URL that can be used to track the application
+  InstanceState:
+    type: object
+    properties:
+      state:
+        type: string
+        description: State of the application
+        enum:
+          - NEW
+          - NEW_SAVING
+          - SUBMITTED
+          - ACCEPTED
+          - RUNNING
+          - FINISHED
+          - FAILED
+          - KILLED
