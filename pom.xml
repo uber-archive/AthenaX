@@ -541,6 +541,8 @@
             <exclude>.gitignore</exclude>
             <exclude>.git/**</exclude>
             <exclude>.idea/**</exclude>
+            <exclude>docs/**</exclude>
+            <exclude>README.md</exclude>
           </excludes>
         </configuration>
       </plugin>
