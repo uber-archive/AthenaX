@@ -542,7 +542,7 @@
             <exclude>.git/**</exclude>
             <exclude>.idea/**</exclude>
             <exclude>docs/**</exclude>
-            <exclude>README.md</exclude>
+            <exclude>*.md</exclude>
           </excludes>
         </configuration>
       </plugin>
