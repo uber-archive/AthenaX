@@ -7,14 +7,14 @@ To run AthenaX, you need to build both AthenaX and Flink. They require Java 8 an
 ### Build AthenaX
 
 ```bash
-$ git clone git@github.com:uber/AthenaX.git
+$ git clone https://github.com/uber/AthenaX.git
 $ mvn clean install
 ```
 
 ### Build Flink
 
 ```bash
-$ git clone git@github.com:apache/flink.git
+$ git clone https://github.com/apache/flink.git
 $ mvn clean install
 ```
 
