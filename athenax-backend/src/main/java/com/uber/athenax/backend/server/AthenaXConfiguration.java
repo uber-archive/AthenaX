@@ -61,7 +61,7 @@ public class AthenaXConfiguration {
     /**
      * The location of the Flink Uber jar.
      */
-    @JsonProperty("filnk.uber.jar.location")
+    @JsonProperty("flink.uber.jar.location")
     private final String flinkUberJar;
 
     /**
@@ -93,7 +93,7 @@ public class AthenaXConfiguration {
     public YarnClusterConfiguration toYarnClusterConfiguration() {
       Preconditions.checkNotNull(yarnSite, "yarn.site.location is not configured");
       Preconditions.checkNotNull(homeDir, "athenax.home.dir is not configured");
-      Preconditions.checkNotNull(flinkUberJar, "filnk.uber.jar.location is not configured");
+      Preconditions.checkNotNull(flinkUberJar, "flink.uber.jar.location is not configured");
 
       YarnConfiguration yarnConf = new YarnConfiguration();
       yarnConf.addResource(new Path(URI.create(yarnSite)));

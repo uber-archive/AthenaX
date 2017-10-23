@@ -29,7 +29,7 @@ clusters:
   foo:
     yarn.site.location: hdfs:///app/athenax/yarn-site.xml
     athenax.home.dir: hdfs:///tmp/athenax
-    filnk.uber.jar.location: hdfs:///app/athenax/flink.jar
+    flink.uber.jar.location: hdfs:///app/athenax/flink.jar
     localize.resources:
       - http://foo/log4j.properties
     additional.jars:
@@ -48,7 +48,7 @@ catalog.impl            | Yes      | The class name of your [catalog provider](h
 clusters                | Yes      | Describe the YARN cluster each of which is a sub-entry of the configuration.
 yarn.site.location      | Yes      | The location of the `yarn-site.xml` that contains the Hadoop-specific configuration of the cluster. Will be used by all instances in the cluster.
 athenax.home.dir        | Yes      | A temporary directory used when starting all instances.
-filnk.uber.jar.location | Yes      | The location of the Flink uber JAR that is generated from the previous step.
+flink.uber.jar.location | Yes      | The location of the Flink uber JAR that is generated from the previous step.
 localize.resources      | Yes      | Additional files that will be localized and shipped along with all job instances but will not be added into the classpaths of the instances (e.g., `log4j.properties`).
 additional.jars         | Yes      | Additional JARs that will be localized and added into the classpaths of the instances (e.g., the JARs of the connectors and their dependency).
 extras                  | Yes      | Additional configuration that can be used by your customization.

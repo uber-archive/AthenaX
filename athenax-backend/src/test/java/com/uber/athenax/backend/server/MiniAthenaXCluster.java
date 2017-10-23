@@ -145,7 +145,7 @@ public class MiniAthenaXCluster implements Closeable {
         .append(String.format("  %s:\n", clusterName))
         .append(String.format("    yarn.site.location: %s\n", new File(parent, "yarn-site.xml").toURI()))
         .append(String.format("    athenax.home.dir: %s\n", workDir.toURI()))
-        .append(String.format("    filnk.uber.jar.location: %s\n", new File(parent, "flink.jar").toURI()))
+        .append(String.format("    flink.uber.jar.location: %s\n", new File(parent, "flink.jar").toURI()))
         .append("    localize.resources:\n");
 
     yarnClusterConf.resourcesToLocalize().forEach(x -> sb.append(String.format("      - %s\n", x.toUri())));
