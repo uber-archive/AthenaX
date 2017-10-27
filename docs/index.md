@@ -24,9 +24,6 @@ If you can't find what you are looking for, we'd love to hear from you either on
 
 We published a [blog post](https://eng.uber.com/athenax) to describe the design and architecture of AthenaX.
 
-## Quick Start
-See [running a docker all in one image](getting_started.md#all-in-one-docker-image).
-
 ## Related links
 - [Introducing AthenaX, Uber Engineering’s Open Source Streaming Analytics Platform](https://eng.uber.com/athenax/)
 

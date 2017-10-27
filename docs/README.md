@@ -16,5 +16,9 @@ Then simply run `make docs`.
 Raise a PR on GitHub. Once the PR is approved and merged,
 ask one of Athenax maintainers to kick off the build on [readthedocs](https://readthedocs.org/projects/athenax/).
 
+## Quick Start
+
+Please see [here](getting_started.md).
+
 [doc-img]: https://readthedocs.org/projects/athenax/badge/?version=latest
 [doc]: http://athenax.readthedocs.org/en/latest/
