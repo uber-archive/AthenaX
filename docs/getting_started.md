@@ -2,7 +2,7 @@
 
 ## Building AthenaX and Flink
 
-To run AthenaX, you need to build both AthenaX and Flink. They require Java 8 and Maven 3 to be built.
+To run AthenaX, you need to build both AthenaX and Flink, and setup YARN cluster. They require Java 8 and Maven 3 to be built.
 
 ### Build AthenaX
 
@@ -17,6 +17,10 @@ $ mvn clean install
 $ git clone https://github.com/apache/flink.git
 $ mvn clean install
 ```
+
+### Install YARN
+
+Follow the [instruction](https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/ClusterSetup.html).
 
 ## Configuring AthenaX
 
