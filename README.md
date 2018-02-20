@@ -9,7 +9,6 @@ See also:
   * AthenaX [documentation][doc] for getting started, operational details, and other information.
   * Blog post [Introducing AthenaX, Uber Engineering’s Open Source Streaming Analytics Platform](https://eng.uber.com/athenax/).
 
-
 ## License
 [Apache 2.0 License](./LICENSE).
 
