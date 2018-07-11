@@ -71,7 +71,7 @@ public class StartJobITest {
         String uuid = api.allocateNewJob().getJobUuid();
         JobDefinitionDesiredstate state = new JobDefinitionDesiredstate()
             .clusterId("foo")
-            .resource(new JobDefinitionResource().vCores(1L).memory(2048L));
+            .resource(new JobDefinitionResource().vCores(1L).memory(2048L).executionSlots(1L));
         JobDefinition job = new JobDefinition()
             .query("SELECT * FROM input.foo")
             .addDesiredStateItem(state);

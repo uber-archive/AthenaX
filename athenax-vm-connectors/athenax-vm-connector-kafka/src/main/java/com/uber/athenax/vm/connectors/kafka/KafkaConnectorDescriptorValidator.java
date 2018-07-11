@@ -23,12 +23,12 @@ import org.apache.flink.streaming.connectors.kafka.partitioner.FlinkFixedPartiti
 /**
  * The configuration keys for the Kafka connectors.
  */
-public final class KafkaConnectorConfigKeys {
+public final class KafkaConnectorDescriptorValidator {
   /**
    * The prefix of all Kafka configurations that will be passed into
    * the Kafka consumer / producer.
    */
-  public static final String KAFKA_CONFIG_PREFIX = "kafka.";
+  public static final String KAFKA_CONFIG_PREFIX = "kafka";
 
   /**
    * Default partitioner.
@@ -46,6 +46,11 @@ public final class KafkaConnectorConfigKeys {
    */
   public static final String TOPIC_NAME_KEY = "athenax.kafka.topic.name";
 
-  private KafkaConnectorConfigKeys() {
+  /**
+   * The prefix for Kafka topic schema.
+   */
+  public static final String TOPIC_SCHEMA_KEY = "athenax.kafka.topic.schema";
+
+  private KafkaConnectorDescriptorValidator() {
   }
 }

@@ -18,24 +18,24 @@
 
 package com.uber.athenax.vm.connectors.kafka;
 
-import com.uber.athenax.vm.api.DataSinkProvider;
+import com.uber.athenax.vm.api.tables.AthenaXTableSinkProvider;
 import org.apache.flink.streaming.connectors.kafka.Kafka09JsonTableSink;
 import org.apache.flink.streaming.connectors.kafka.partitioner.FlinkKafkaPartitioner;
 import org.apache.flink.table.catalog.ExternalCatalogTable;
+import org.apache.flink.table.descriptors.DescriptorProperties;
 import org.apache.flink.table.sinks.AppendStreamTableSink;
 import org.apache.flink.table.sinks.BatchTableSink;
 import org.apache.flink.types.Row;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.Properties;
 
-import static com.uber.athenax.vm.connectors.kafka.KafkaConnectorConfigKeys.KAFKA_CONFIG_PREFIX;
-import static com.uber.athenax.vm.connectors.kafka.KafkaConnectorConfigKeys.PARTITIONER_CLASS_NAME_DEFAULT;
-import static com.uber.athenax.vm.connectors.kafka.KafkaConnectorConfigKeys.PARTITIONER_CLASS_NAME_KEY;
-import static com.uber.athenax.vm.connectors.kafka.KafkaConnectorConfigKeys.TOPIC_NAME_KEY;
+import static com.uber.athenax.vm.connectors.kafka.KafkaConnectorDescriptorValidator.KAFKA_CONFIG_PREFIX;
+import static com.uber.athenax.vm.connectors.kafka.KafkaConnectorDescriptorValidator.PARTITIONER_CLASS_NAME_DEFAULT;
+import static com.uber.athenax.vm.connectors.kafka.KafkaConnectorDescriptorValidator.PARTITIONER_CLASS_NAME_KEY;
+import static com.uber.athenax.vm.connectors.kafka.KafkaConnectorDescriptorValidator.TOPIC_NAME_KEY;
 
-public class KafkaJsonConnector implements DataSinkProvider {
+public class KafkaJsonConnector implements AthenaXTableSinkProvider {
   private static final String TYPE = "kafka+json";
 
   @Override
@@ -45,10 +45,13 @@ public class KafkaJsonConnector implements DataSinkProvider {
 
   @Override
   public AppendStreamTableSink<Row> getAppendStreamTableSink(ExternalCatalogTable table) throws IOException {
-    Map<String, String> prop = table.properties();
-    String topic = prop.get(TOPIC_NAME_KEY);
-    Properties conf = KafkaUtils.getSubProperties(prop, KAFKA_CONFIG_PREFIX);
-    String partitionerClass = prop.getOrDefault(PARTITIONER_CLASS_NAME_KEY, PARTITIONER_CLASS_NAME_DEFAULT);
+    DescriptorProperties params = new DescriptorProperties(true);
+    table.addProperties(params);
+    String topic = params.getString(TOPIC_NAME_KEY);
+    Properties conf = new Properties();
+    conf.putAll(params.getPrefix(KAFKA_CONFIG_PREFIX));
+    String partitionerClass = params.getOptionalString(PARTITIONER_CLASS_NAME_KEY)
+        .orElse(PARTITIONER_CLASS_NAME_DEFAULT);
     FlinkKafkaPartitioner<Row> partitioner;
     try {
       partitioner = KafkaUtils.instantiatePartitioner(partitionerClass);

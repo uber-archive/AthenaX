@@ -16,29 +16,8 @@
  * limitations under the License.
  */
 
-package com.uber.athenax.vm.api;
-
-import java.util.List;
-import java.util.Map;
-
 /**
- * AthenaXTableCatalogProvider provides the catalogs for all clusters.
+ * This packages contains the public APIs that can be used to extend AthenaX.
+ * including the connectors, table sources/sinks and the catalogs
  */
-public interface AthenaXTableCatalogProvider {
-  /**
-   * Return the catalogs for input tables for a specific cluster.
-   *
-   * @param cluster the name of the cluster
-   * @return a map from catalog name to the catalog.
-   */
-  Map<String, AthenaXTableCatalog> getInputCatalog(String cluster);
-
-  /**
-   * Generate a output catalog for a specific cluster.
-   *
-   * @param cluster the name of the cluster
-   * @param outputs customized strings that define the outputs.
-   * @return a catalog that describes all the outputs.
-   */
-  AthenaXTableCatalog getOutputCatalog(String cluster, List<String> outputs);
-}
+package com.uber.athenax.vm.api.tables;

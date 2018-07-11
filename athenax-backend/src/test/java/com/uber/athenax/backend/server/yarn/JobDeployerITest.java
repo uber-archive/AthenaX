@@ -18,6 +18,7 @@
 
 package com.uber.athenax.backend.server.yarn;
 
+import com.uber.athenax.backend.api.JobDefinitionResource;
 import com.uber.athenax.backend.server.MiniAthenaXCluster;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.JobManagerOptions;
@@ -57,7 +58,9 @@ public class JobDeployerITest {
         JobDeployer deployer = new JobDeployer(clusterConf, client, executor, flinkConf);
         appId = deployer.createApplication();
         InstanceMetadata md = new InstanceMetadata(UUID.randomUUID(), UUID.randomUUID());
-        JobConf jobConf = new JobConf(appId, "test", Collections.emptyList(), null, 1, 2048, md);
+        JobDefinitionResource resource = new JobDefinitionResource()
+            .queue(null).vCores(1L).executionSlots(1L).memory(2048L);
+        JobConf jobConf = new JobConf(appId, "test", Collections.emptyList(), resource, md);
         deployer.start(JobITestUtil.trivialJobGraph(), jobConf);
 
         YarnApplicationState state = MiniAthenaXCluster.pollFinishedApplicationState(client, appId);

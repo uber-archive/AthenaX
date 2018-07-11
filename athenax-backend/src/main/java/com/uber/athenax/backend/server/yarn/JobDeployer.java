@@ -25,7 +25,6 @@ import org.apache.flink.configuration.Configuration;
 import org.apache.flink.runtime.clusterframework.messages.ShutdownClusterAfterJob;
 import org.apache.flink.runtime.jobgraph.JobGraph;
 import org.apache.flink.util.Preconditions;
-import org.apache.flink.yarn.YarnClusterClient;
 import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.hadoop.yarn.client.api.YarnClient;
 import org.apache.hadoop.yarn.client.api.YarnClientApplication;
@@ -68,15 +67,14 @@ class JobDeployer {
   }
 
   void start(JobGraph job, JobConf desc) throws Exception {
-    AthenaXYarnClusterDescriptor descriptor = new AthenaXYarnClusterDescriptor(clusterConf, yarnClient, desc);
+    AthenaXYarnClusterDescriptor descriptor =
+        new AthenaXYarnClusterDescriptor(clusterConf, yarnClient, flinkConf, desc);
     start(descriptor, job);
   }
 
   @VisibleForTesting
   void start(AthenaXYarnClusterDescriptor descriptor, JobGraph job) throws Exception {
-    Configuration conf = new Configuration(flinkConf);
-    descriptor.setFlinkConfiguration(conf);
-    YarnClusterClient client = descriptor.deploy();
+    ClusterClient<ApplicationId> client = descriptor.deploy();
     try {
       client.runDetached(job, null);
       stopAfterJob(client, job.getJobID());

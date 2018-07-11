@@ -21,18 +21,27 @@ package com.uber.athenax.vm.compiler.executor;
 import org.apache.flink.api.java.typeutils.RowTypeInfo;
 import org.apache.flink.table.api.TableSchema;
 import org.apache.flink.table.catalog.ExternalCatalogTable;
+import org.apache.flink.table.descriptors.ConnectorDescriptor;
+import org.apache.flink.table.descriptors.DescriptorProperties;
 import org.apache.flink.types.Row;
+import scala.Option;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Base64;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
+/**
+ * External Catalog Table based on mock data and mock schema.
+ */
 public class MockExternalCatalogTable implements Serializable {
+  static final String TABLE_SCHEMA_CONNECTOR_PROPERTY = "table.schema";
+  static final String TABLE_DATA_CONNECTOR_PROPERTY = "table.data";
+  static final String CONNECTOR_TYPE = "mock";
+  static final int CONNECTOR_VERSION = 1;
+
   private final RowTypeInfo schema;
   private final List<Row> data;
 
@@ -43,8 +52,14 @@ public class MockExternalCatalogTable implements Serializable {
 
   ExternalCatalogTable toExternalCatalogTable() {
     TableSchema tableSchema = new TableSchema(schema.getFieldNames(), schema.getFieldTypes());
-    Map<String, String> prop = Collections.singletonMap("data", serializeRows());
-    return new ExternalCatalogTable("mock", tableSchema, prop, null, "", 0L, 0L);
+    ConnectorDescriptor descriptor = new ConnectorDescriptor(CONNECTOR_TYPE, CONNECTOR_VERSION, false) {
+      @Override
+      public void addConnectorProperties(DescriptorProperties properties) {
+        properties.putTableSchema(TABLE_SCHEMA_CONNECTOR_PROPERTY, tableSchema);
+        properties.putString(TABLE_DATA_CONNECTOR_PROPERTY, serializeRows());
+      }
+    };
+    return new ExternalCatalogTable(descriptor, Option.empty(), Option.empty(), Option.empty(), Option.empty());
   }
 
   private String serializeRows() {

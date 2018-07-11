@@ -37,6 +37,27 @@ import static org.junit.Assert.assertTrue;
 public class ProcessExecutorTest {
 
   @Test
+  public void testDirectCompile() throws IOException {
+    RowTypeInfo schema = new RowTypeInfo(new TypeInformation[]{BasicTypeInfo.INT_TYPE_INFO}, new String[] {"id"});
+    MockExternalCatalogTable inputTable = new MockExternalCatalogTable(schema, Collections.singletonList(Row.of(1)));
+    MockExternalCatalogTable outputTable = new MockExternalCatalogTable(schema, new ArrayList<>());
+    SingleLevelMemoryCatalog input = new SingleLevelMemoryCatalog("input",
+        Collections.singletonMap("foo", inputTable));
+    SingleLevelMemoryCatalog output = new SingleLevelMemoryCatalog("output",
+        Collections.singletonMap("bar", outputTable));
+    JobDescriptor job = new JobDescriptor(
+        Collections.singletonMap("input", input),
+        Collections.emptyMap(),
+        output,
+        1,
+        "SELECT * FROM input.foo");
+    CompilationResult res = JobCompiler.compileJob(job);
+    assertNull(res.remoteThrowable());
+    assertNotNull(res.jobGraph());
+
+  }
+
+  @Test
   public void testCompile() throws IOException {
     RowTypeInfo schema = new RowTypeInfo(new TypeInformation[]{BasicTypeInfo.INT_TYPE_INFO}, new String[] {"id"});
     MockExternalCatalogTable inputTable = new MockExternalCatalogTable(schema, Collections.singletonList(Row.of(1)));

@@ -16,4 +16,4 @@
 # limitations under the License.
 ################################################################################
 
-com.uber.athenax.vm.compiler.executor.MockDataSinkProvider
+com.uber.athenax.vm.compiler.executor.MockTableSinkProvider

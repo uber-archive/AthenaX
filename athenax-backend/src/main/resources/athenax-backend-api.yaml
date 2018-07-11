@@ -244,6 +244,10 @@ definitions:
                   type: integer
                   format: int64
                   description: Virtual cores for each container
+                executionSlots:
+                  type: integer
+                  format: int64
+                  description: Execution slots per virtual cores for each container
   ExtendedJobDefinition:
     type: object
     properties:

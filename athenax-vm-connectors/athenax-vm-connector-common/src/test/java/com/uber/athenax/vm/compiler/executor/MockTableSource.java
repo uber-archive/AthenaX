@@ -22,6 +22,7 @@ import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.typeutils.RowTypeInfo;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.table.api.TableSchema;
 import org.apache.flink.table.sources.StreamTableSource;
 import org.apache.flink.types.Row;
 
@@ -30,10 +31,12 @@ import java.util.List;
 class MockTableSource implements StreamTableSource<Row> {
   private final List<Row> data;
   private final RowTypeInfo type;
+  private final TableSchema schema;
 
   MockTableSource(List<Row> data, RowTypeInfo type) {
     this.data = data;
     this.type = type;
+    this.schema = new TableSchema(type.getFieldNames(), type.getFieldTypes());
   }
 
   @Override
@@ -44,6 +47,11 @@ class MockTableSource implements StreamTableSource<Row> {
   @Override
   public TypeInformation<Row> getReturnType() {
     return type;
+  }
+
+  @Override
+  public TableSchema getTableSchema() {
+    return schema;
   }
 
   @Override

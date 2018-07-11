@@ -186,9 +186,7 @@ public class InstanceManager implements AutoCloseable {
         appId,
         jobUUID.toString(),
         job.additionalJars(),
-        state.getResource().getQueue(),
-        state.getResource().getVCores(),
-        state.getResource().getMemory(),
+        state.getResource(),
         md);
 
     LOG.info("Instantiating job {} at {}", jobUUID, clusterName);

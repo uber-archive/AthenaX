@@ -18,6 +18,7 @@
 
 package com.uber.athenax.backend.server.jobs;
 
+import com.google.common.collect.Iterables;
 import com.uber.athenax.backend.api.ExtendedJobDefinition;
 import com.uber.athenax.backend.api.JobDefinition;
 import com.uber.athenax.backend.api.JobDefinitionDesiredstate;
@@ -25,7 +26,6 @@ import com.uber.athenax.backend.server.ServerContext;
 import com.uber.athenax.backend.server.yarn.InstanceInfo;
 import com.uber.athenax.backend.server.yarn.InstanceManager;
 import com.uber.athenax.vm.compiler.planner.JobCompilationResult;
-import org.apache.flink.shaded.com.google.common.collect.Iterables;
 import org.apache.hadoop.yarn.exceptions.ApplicationNotFoundException;
 import org.apache.hadoop.yarn.exceptions.YarnException;
 import org.slf4j.Logger;

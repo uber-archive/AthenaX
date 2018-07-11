@@ -18,14 +18,15 @@
 
 package com.uber.athenax.backend.server.yarn;
 
+import com.uber.athenax.backend.api.JobDefinitionResource;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.yarn.api.records.ApplicationId;
 
 import java.util.List;
 
 /**
- * JobConf consists of information on how the job should be executed on YARN, such as the resources
- * that need to be localized, the queue, and the amount of resources required to execute the job.
+ * JobConf consists of information on how the job should be executed on YARN.
+ * Such as the resources that need to be localized, the queue, and the amount of resources required to execute the job.
  */
 class JobConf {
   /**
@@ -50,6 +51,10 @@ class JobConf {
    */
   private final long taskManagerCount;
   /**
+   * The number of executor slot per TaskManager.
+   */
+  private final long slotCountPerTaskManager;
+  /**
    * The size of the heap used by each TaskManager.
    */
   private final long taskManagerMemoryMb;
@@ -63,16 +68,15 @@ class JobConf {
       ApplicationId yarnAppId,
       String name,
       List<Path> userProvidedJars,
-      String queue,
-      long taskManagerCount,
-      long taskManagerMemoryMb,
+      JobDefinitionResource resource,
       InstanceMetadata metadata) {
     this.yarnAppId = yarnAppId;
     this.name = name;
     this.userProvidedJars = userProvidedJars;
-    this.queue = queue;
-    this.taskManagerCount = taskManagerCount;
-    this.taskManagerMemoryMb = taskManagerMemoryMb;
+    this.queue = resource.getQueue();
+    this.taskManagerCount = resource.getVCores();
+    this.taskManagerMemoryMb = resource.getMemory();
+    this.slotCountPerTaskManager = resource.getExecutionSlots();
     this.metadata = metadata;
   }
 
@@ -94,6 +98,10 @@ class JobConf {
 
   long taskManagerCount() {
     return taskManagerCount;
+  }
+
+  public long slotCountPerTaskManager() {
+    return slotCountPerTaskManager;
   }
 
   long taskManagerMemoryMb() {

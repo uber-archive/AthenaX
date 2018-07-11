@@ -15,8 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+package com.uber.athenax.vm.api.tables;
+
+import org.apache.flink.table.catalog.ExternalCatalog;
+
+import java.io.Serializable;
+
 /**
- * This packages contains the public APIs that can be used to extend AthenaX,
- * including the connectors, user-define functions and the catalogs.
+ * A catalog that describes the mappings between SQL tables to data sources.
+ *
+ * <p>AthenaXTableCatalog needs to inherit from {@link Serializable} as the
+ * actual compilation might happen remotely.</p>
  */
-package com.uber.athenax.vm.api;
+public interface AthenaXTableCatalog extends ExternalCatalog, Serializable {
+}

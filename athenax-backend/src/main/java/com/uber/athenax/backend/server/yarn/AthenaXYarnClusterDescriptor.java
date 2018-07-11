@@ -18,9 +18,13 @@
 
 package com.uber.athenax.backend.server.yarn;
 
+import com.google.common.collect.Iterables;
+import org.apache.flink.client.deployment.ClusterDeploymentException;
+import org.apache.flink.client.deployment.ClusterSpecification;
+import org.apache.flink.client.program.ClusterClient;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.JobManagerOptions;
-import org.apache.flink.shaded.com.google.common.collect.Iterables;
+import org.apache.flink.runtime.jobgraph.JobGraph;
 import org.apache.flink.yarn.AbstractYarnClusterDescriptor;
 import org.apache.flink.yarn.Utils;
 import org.apache.flink.yarn.YarnApplicationMasterRunner;
@@ -79,18 +83,25 @@ class AthenaXYarnClusterDescriptor extends AbstractYarnClusterDescriptor {
   private final YarnClusterConfiguration clusterConf;
   private final YarnClient yarnClient;
   private final JobConf job;
+  private final Configuration flinkConf;
 
   AthenaXYarnClusterDescriptor(
       YarnClusterConfiguration clusterConf,
       YarnClient yarnClient,
+      Configuration flinkConf,
       JobConf job) {
+    super(new Configuration(flinkConf),
+        clusterConf.conf(),
+        "",
+        yarnClient,
+        true);
     this.clusterConf = clusterConf;
     this.yarnClient = yarnClient;
+    this.flinkConf = flinkConf;
     this.job = job;
   }
 
-  @Override
-  public YarnClusterClient deploy() {
+  ClusterClient<ApplicationId> deploy() {
     ApplicationSubmissionContext context = Records.newRecord(ApplicationSubmissionContext.class);
     context.setApplicationId(job.yarnAppId());
     ApplicationReport report;
@@ -101,7 +112,12 @@ class AthenaXYarnClusterDescriptor extends AbstractYarnClusterDescriptor {
       conf.setString(JobManagerOptions.ADDRESS.key(), report.getHost());
       conf.setInteger(JobManagerOptions.PORT.key(), report.getRpcPort());
 
-      return createYarnClusterClient(this, yarnClient, report, conf, false);
+      return createYarnClusterClient(this,
+          (int) job.taskManagerCount(),
+          (int) job.slotCountPerTaskManager(),
+          report,
+          conf,
+          false);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -113,12 +129,16 @@ class AthenaXYarnClusterDescriptor extends AbstractYarnClusterDescriptor {
     Map<String, LocalResource> localResources = new HashMap<>();
     Set<Path> shippedPaths = new HashSet<>();
     collectLocalResources(localResources, shippedPaths);
-    final ContainerLaunchContext amContainer = setupApplicationMasterContainer(false, true, false);
+    final ContainerLaunchContext amContainer = setupApplicationMasterContainer(
+        this.getYarnSessionClusterEntrypoint(),
+        false,
+        true,
+        false, (int) job.taskManagerMemoryMb());
 
     amContainer.setLocalResources(localResources);
 
     final String classPath = localResources.keySet().stream().collect(Collectors.joining(File.pathSeparator));
-    final String shippedFiles = shippedPaths.stream().map(Path::toString)
+    final String shippedFiles = shippedPaths.stream().map(x -> x.getName() + "=" + x.toString())
         .collect(Collectors.joining(","));
 
     // Setup CLASSPATH and environment variables for ApplicationMaster
@@ -225,8 +245,38 @@ class AthenaXYarnClusterDescriptor extends AbstractYarnClusterDescriptor {
   }
 
   @Override
-  protected Class<?> getApplicationMasterClass() {
-    return YarnApplicationMasterRunner.class;
+  protected String getYarnSessionClusterEntrypoint() {
+    return YarnApplicationMasterRunner.class.getCanonicalName();
+  }
+
+  @Override
+  protected String getYarnJobClusterEntrypoint() {
+    return null;
+  }
+
+  @Override
+  protected ClusterClient<ApplicationId> createYarnClusterClient(
+      AbstractYarnClusterDescriptor clusterDescriptor,
+      int numberTaskManagers,
+      int slotPerTaskManager,
+      ApplicationReport applicationReport,
+      Configuration configuration,
+      boolean isNewlyCreatedCluster) throws Exception {
+    return new YarnClusterClient(
+        clusterDescriptor,
+        numberTaskManagers,
+        slotPerTaskManager,
+        applicationReport,
+        configuration,
+        isNewlyCreatedCluster);
+  }
+
+  @Override
+  public ClusterClient<ApplicationId> deployJobCluster(
+      ClusterSpecification clusterSpecification,
+      JobGraph jobGraph,
+      boolean b) throws ClusterDeploymentException {
+    return null;
   }
 
   private final class PollDeploymentStatus implements Runnable {

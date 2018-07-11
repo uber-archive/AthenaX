@@ -18,18 +18,19 @@
 
 package com.uber.athenax.vm.compiler.executor;
 
-import com.uber.athenax.vm.api.AthenaXTableCatalog;
+import com.uber.athenax.vm.api.tables.AthenaXTableCatalog;
 import org.apache.flink.table.api.CatalogNotExistException;
 import org.apache.flink.table.api.TableNotExistException;
 import org.apache.flink.table.catalog.ExternalCatalog;
 import org.apache.flink.table.catalog.ExternalCatalogTable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class SingleLevelMemoryCatalog implements AthenaXTableCatalog {
+public class SingleLevelMemoryCatalog implements AthenaXTableCatalog, Serializable {
   private static final long serialVersionUID = -1L;
   private final String database;
   private final Map<String, MockExternalCatalogTable> tables;

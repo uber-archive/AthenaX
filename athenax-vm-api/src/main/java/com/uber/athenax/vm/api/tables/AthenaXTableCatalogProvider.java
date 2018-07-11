@@ -16,17 +16,29 @@
  * limitations under the License.
  */
 
-package com.uber.athenax.vm.api;
+package com.uber.athenax.vm.api.tables;
 
-import org.apache.flink.table.catalog.ExternalCatalog;
-
-import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 /**
- * A catalog that describes the mappings between SQL tables to data sources.
- *
- * <p>AthenaXTableCatalog needs to inherit from {@link Serializable} as the
- * actual compilation might happen remotely.</p>
+ * AthenaXTableCatalogProvider provides the catalogs for all clusters.
  */
-public interface AthenaXTableCatalog extends ExternalCatalog, Serializable {
+public interface AthenaXTableCatalogProvider {
+  /**
+   * Return the catalogs for input tables for a specific cluster.
+   *
+   * @param cluster the name of the cluster
+   * @return a map from catalog name to the catalog.
+   */
+  Map<String, AthenaXTableCatalog> getInputCatalog(String cluster);
+
+  /**
+   * Generate a output catalog for a specific cluster.
+   *
+   * @param cluster the name of the cluster
+   * @param outputs customized strings that define the outputs.
+   * @return a catalog that describes all the outputs.
+   */
+  AthenaXTableCatalog getOutputCatalog(String cluster, List<String> outputs);
 }

@@ -18,11 +18,11 @@
 
 package com.uber.athenax.vm.compiler.executor;
 
-import com.uber.athenax.vm.api.AthenaXAggregateFunction;
-import com.uber.athenax.vm.api.AthenaXScalarFunction;
-import com.uber.athenax.vm.api.AthenaXTableCatalog;
-import com.uber.athenax.vm.api.AthenaXTableFunction;
-import com.uber.athenax.vm.api.DataSinkProvider;
+import com.uber.athenax.vm.api.functions.AthenaXAggregateFunction;
+import com.uber.athenax.vm.api.functions.AthenaXScalarFunction;
+import com.uber.athenax.vm.api.functions.AthenaXTableFunction;
+import com.uber.athenax.vm.api.tables.AthenaXTableCatalog;
+import com.uber.athenax.vm.api.tables.AthenaXTableSinkProvider;
 import org.apache.flink.runtime.jobgraph.JobGraph;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -59,21 +59,33 @@ public class JobCompiler {
   }
 
   public static void main(String[] args) throws IOException {
-    StreamExecutionEnvironment execEnv = StreamExecutionEnvironment.createLocalEnvironment();
-    StreamTableEnvironment env = StreamTableEnvironment.getTableEnvironment(execEnv);
-    execEnv.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-    CompilationResult res = new CompilationResult();
-
+    CompilationResult res = null;
     try {
       JobDescriptor job = getJobConf(System.in);
-      res.jobGraph(new JobCompiler(env, job).getJobGraph());
+      res = compileJob(job);
     } catch (Throwable e) {
+      res = new CompilationResult();
       res.remoteThrowable(e);
     }
 
     try (OutputStream out = chooseOutputStream(args)) {
       out.write(res.serialize());
     }
+  }
+
+  public static CompilationResult compileJob(JobDescriptor job) {
+    StreamExecutionEnvironment execEnv = StreamExecutionEnvironment.createLocalEnvironment();
+    StreamTableEnvironment env = StreamTableEnvironment.getTableEnvironment(execEnv);
+    execEnv.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+    CompilationResult res = new CompilationResult();
+
+    try {
+      res.jobGraph(new JobCompiler(env, job).getJobGraph());
+    } catch (IOException e) {
+      res.remoteThrowable(e);
+    }
+
+    return res;
   }
 
   private static OutputStream chooseOutputStream(String[] args) throws IOException {
@@ -93,7 +105,7 @@ public class JobCompiler {
     this
         .registerUdfs()
         .registerInputCatalogs();
-    Table table = env.sql(job.sql());
+    Table table = env.sqlQuery(job.sql());
     for (String t : job.outputs().listTables()) {
       table.writeToSink(getOutputTable(job.outputs().getTable(t)));
     }
@@ -143,9 +155,8 @@ public class JobCompiler {
 
   private AppendStreamTableSink<Row> getOutputTable(
       ExternalCatalogTable output) throws IOException {
-    String tableType = output.tableType();
-    DataSinkProvider c = DataSinkRegistry.getProvider(tableType);
-    Preconditions.checkNotNull(c, "Cannot find output connectors for " + tableType);
+    AthenaXTableSinkProvider c = TableSinkProviderRegistry.getProvider(output);
+    Preconditions.checkNotNull(c, "Cannot find output connectors for " + output);
     return c.getAppendStreamTableSink(output);
   }
 }

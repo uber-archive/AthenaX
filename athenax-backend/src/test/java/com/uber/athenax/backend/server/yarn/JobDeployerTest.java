@@ -26,13 +26,11 @@ import org.apache.flink.yarn.YarnClusterClient;
 import org.apache.hadoop.yarn.client.api.YarnClient;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 
 import scala.concurrent.Future$;
 
 import java.util.concurrent.ScheduledExecutorService;
 
-import static org.junit.Assert.assertNotSame;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -61,8 +59,6 @@ public class JobDeployerTest {
     doReturn(JobID.generate()).when(jobGraph).getJobID();
     deploy.start(desc, jobGraph);
 
-    ArgumentCaptor<Configuration> args = ArgumentCaptor.forClass(Configuration.class);
-    verify(desc).setFlinkConfiguration(args.capture());
-    assertNotSame(flinkConf, args.getValue());
+    verify(clusterClient).runDetached(jobGraph, null);
   }
 }
