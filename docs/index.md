@@ -11,7 +11,7 @@ If you can't find what you are looking for, we'd love to hear from you either on
 
   * Streaming SQL
     * Filtering, projecting and combining streams
-    * Aggregation on [group windows](https://ci.apache.org/projects/flink/flink-docs-release-1.3/dev/table/sql.html#group-windows) over both processing and event time
+    * Aggregation on [group windows](https://ci.apache.org/projects/flink/flink-docs-release-1.5/dev/table/sql.html#group-windows) over both processing and event time
     * User-defined functions (UDF), User-defined aggregation function (UDAF), and User-defined table functions (UDTF) (coming soon)
   * Efficient executions through optimizations and code generations
   * Mechanisms to automatically fail over across multiple data centers

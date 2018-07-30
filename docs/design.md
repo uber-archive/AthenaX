@@ -26,7 +26,7 @@ User-defined catalogs must implement [AthenaXTableCatalogProvider]( https://gith
 
 ### Compiling AthenaX jobs to Flink applications
 
-To execute the AthenaX jobs efficiently, Athenax compiles them to native Flink applications using the Flink's [Table and SQL APIs](https://ci.apache.org/projects/flink/flink-docs-release-1.3/dev/table/index.html). On a very high level, AthenaX combines the catalogs and the parameters (e.g., parallelism) with the SQL specified the job and compiles it to a Flink application, which is represented as a [JobGraph](https://ci.apache.org/projects/flink/flink-docs-release-1.3/internals/job_scheduling.html) in Flink.
+To execute the AthenaX jobs efficiently, Athenax compiles them to native Flink applications using the Flink's [Table and SQL APIs](https://ci.apache.org/projects/flink/flink-docs-release-1.5/dev/table/index.html). On a very high level, AthenaX combines the catalogs and the parameters (e.g., parallelism) with the SQL specified the job and compiles it to a Flink application, which is represented as a [JobGraph](https://ci.apache.org/projects/flink/flink-docs-release-1.5/internals/job_scheduling.html) in Flink.
 
 AthenaX supports SQL with user-defined functions. Users can specify additional JARs to be loaded along with the SQL. To compile them safely, AthenaX compiles the SQL in a dedicated [process](https://github.com/uber/AthenaX/blob/master/athenax-vm-compiler/src/main/java/com/uber/athenax/vm/compiler/executor/ContainedExecutor.java). However, the functionality, particularly localizing the UDF jar, has not been fully implemented in the current version.
 

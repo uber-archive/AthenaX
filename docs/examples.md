@@ -1,6 +1,6 @@
 # Examples
 
-This section briefly describes a few examples on building streaming analytic applications using SQL. Please read Flink's [Table and SQL API](https://ci.apache.org/projects/flink/flink-docs-release-1.3/dev/table/sql.html) for more details.
+This section briefly describes a few examples on building streaming analytic applications using SQL. Please read Flink's [Table and SQL API](https://ci.apache.org/projects/flink/flink-docs-release-1.5/dev/table/sql.html) for more details.
 
 ## Transforming a stream
 
