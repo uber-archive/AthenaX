@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit;
  * {@link JobDeployer} takes a {@link JobGraph} and executes it on YARN.
  *
  * <p>The current deployment model closely follow the
- * <a href="https://ci.apache.org/projects/flink/flink-docs-release-1.3/setup/yarn_setup.html">Flink On YARN</a>
+ * <a href="https://ci.apache.org/projects/flink/flink-docs-release-1.5/ops/deployment/yarn_setup.html">Flink On YARN</a>
  * set ups. Each job has its own dedicated Flink cluster that is spawned on YARN.
  * The deployment model needs to be revisited once FLIP-6 has been landed.</p>
  *
